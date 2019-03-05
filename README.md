@@ -1,5 +1,5 @@
 # OverTheWire
-From [https://overthewire.org/wargames/]
+From https://overthewire.org/wargames/
 
 >The Wargames offered by the OverTheWire community can help you to learn and practice security concepts in the form of fun-filled games.
 
