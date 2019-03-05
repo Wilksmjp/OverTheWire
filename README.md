@@ -9,4 +9,4 @@ These are my scripts for the various challenges in the event the flags change. A
 >The Bandit wargame is aimed at absolute beginners. It will teach the basics needed to be able to play other wargames.
 
 ### Natas
->Natas teaches the basics of serverside web-security 
+>Natas teaches the basics of serverside web-security. 
