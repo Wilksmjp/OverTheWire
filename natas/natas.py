@@ -248,6 +248,15 @@ def natas10(natas10Password):
     natas11Password = cleanFlag(natas11Password)
     return(natas11Password)
 
+def natas11(natas11Password):
+    username = 'natas11'
+    auth_64 = encodeCreds(username, natas11Password)
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    print('[+] Logging into Natas 11 [+]')
+    return()
+
 def main():
     os.system('clear')
     print('[+] Cleaning flags.txt of old passwords [+]')
