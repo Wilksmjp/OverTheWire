@@ -256,7 +256,6 @@ def natas10(natas10Password):
 def natas11(natas11Password):
     username = 'natas11'
     auth_64 = encodeCreds(username, natas11Password)
-<<<<<<< HEAD
     url = 'http://natas11.natas.labs.overthewire.org'
     headers = {
         'Authorization' : 'Basic ' + auth_64
@@ -272,13 +271,7 @@ def natas11(natas11Password):
         }
     cookie = base64.b64decode(cookie)
     return ''.join(chr(str(a) ^ str(b)) for a,b in zip(cookie, dataToXOR))
-=======
-    headers = {
-        'Authorization' : 'Basic ' + auth_64
-    }
-    print('[+] Logging into Natas 11 [+]')
-    return()
->>>>>>> d680465ce7891d22adcf0347b034d475b3fabdb2
+
 
 def main():
     os.system('clear')
